@@ -111,7 +111,7 @@ https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook \
 Add screenshots here:
 
 ```text
-docs/images/bot-demo.png
+docs/images/bot.png
 ```
 
 ---
