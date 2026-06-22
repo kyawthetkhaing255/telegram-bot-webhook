@@ -25,10 +25,7 @@ A modern Telegram bot built with **Node.js** and **Telegram Webhooks**.
 telegram-bot-webhook/
 │
 ├── src/
-│   ├── bot.js
-│   ├── handlers/
-│   └── routes/
-│
+│   bot.js
 ├── .env
 ├── package.json
 ├── README.md
@@ -68,7 +65,6 @@ Create a `.env` file:
 
 ```env
 BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
-WEBHOOK_URL=https://your-domain.com
 PORT=3000
 ```
 
@@ -79,7 +75,7 @@ PORT=3000
 Development mode:
 
 ```bash
-npm run dev
+node start.js
 ```
 
 Production mode:
