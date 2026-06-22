@@ -11,43 +11,104 @@ const PORT = process.env.PORT || 3000;
 
 if (!TOKEN)
 {
-    console.error('BOT_TOKEN is missing');
+    console.error('BOT_TOKEN missing in .env');
     process.exit(1);
 }
 
 const API =
     `https://api.telegram.org/bot${TOKEN}`;
 
-async function sendMessage(chatId, text)
+
+
+
+
+
+// setting webhook
+async function setWebhook(publicUrl)
 {
-    await fetch(
-        `${API}/sendMessage`,
-        {
-            method: 'POST',
-            headers:
+    const res =
+        await fetch(
+            `https://api.telegram.org/bot${process.env.BOT_TOKEN}/setWebhook`,
             {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(
-            {
-                chat_id: chatId,
-                text: text
-            })
-        }
-    );
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: `${publicUrl}/webhook`
+                })
+            }
+        );
+
+    const data = await res.json();
+
+    console.log('[WEBHOOK]', data);
 }
 
+
+
+/*
+ * Send Telegram Message
+ */
+async function sendMessage(chatId, text)
+{
+    try
+    {
+        const response =
+            await fetch(
+                `${API}/sendMessage`,
+                {
+                    method: 'POST',
+                    headers:
+                    {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(
+                    {
+                        chat_id: chatId,
+                        text: text
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            '[SEND]',
+            data.ok
+        );
+    }
+    catch(error)
+    {
+        console.error(
+            '[SEND ERROR]',
+            error.message
+        );
+    }
+}
+
+/*
+ * Home Route
+ */
 app.get('/', (req, res) =>
 {
-    res.send('Telegram Bot Running');
+    res.send('Telegram Bot Online');
 });
 
+/*
+ * Telegram Webhook Route
+ */
 app.post('/webhook', async (req, res) =>
 {
     try
     {
+        const update =
+            req.body;
+
         const message =
-            req.body.message;
+            update.message;
 
         if (!message)
         {
@@ -60,39 +121,61 @@ app.post('/webhook', async (req, res) =>
         const text =
             message.text || '';
 
-        console.log(text);
+        console.log(
+            '[MESSAGE]',
+            text
+        );
 
-        if (text === '/start')
+        switch(text)
         {
-            await sendMessage(
-                chatId,
-                'Welcome to Science Tutor Bot 🚀'
-            );
-        }
-        else if (text === '/ping')
-        {
-            await sendMessage(
-                chatId,
-                'Pong!'
-            );
-        }
-        else
-        {
-            await sendMessage(
-                chatId,
-                `Echo: ${text}`
-            );
+            case '/start':
+
+                await sendMessage(
+                    chatId,
+                    '🚀 Welcome to Science Tutor Bot'
+                );
+
+                break;
+
+            case '/help':
+
+                await sendMessage(
+                    chatId,
+                    '/start\n/help\n/ping'
+                );
+
+                break;
+
+            case '/ping':
+
+                await sendMessage(
+                    chatId,
+                    'Pong ✅'
+                );
+
+                break;
+
+            default:
+
+                await sendMessage(
+                    chatId,
+                    `Echo: ${text}`
+                );
         }
 
         res.sendStatus(200);
     }
-    catch (error)
+    catch(error)
     {
         console.error(error);
+
         res.sendStatus(500);
     }
 });
 
+/*
+ * Start Server
+ */
 app.listen(PORT, () =>
 {
     console.log(
