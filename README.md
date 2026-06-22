@@ -115,7 +115,7 @@ docs/images/bot.png
 ```
 
 <p align="center">
-  <img src="docs/images/bot.png" alt="Bot Screenshot" width="400"/>
+  <img src="docs/images/bot.png" alt="Bot Screenshot" width="100%"/>
 </p>
 ---
 
