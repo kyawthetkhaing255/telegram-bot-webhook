@@ -3,17 +3,21 @@ require('dotenv').config();
 const express = require('express');
 
 const app = express();
+
 app.use(express.json());
 
 const TOKEN = process.env.BOT_TOKEN;
 const PORT = process.env.PORT || 3000;
 
+if (!TOKEN)
+{
+    console.error('BOT_TOKEN is missing');
+    process.exit(1);
+}
+
 const API =
     `https://api.telegram.org/bot${TOKEN}`;
 
-/*
- * Send message helper
- */
 async function sendMessage(chatId, text)
 {
     await fetch(
@@ -33,77 +37,65 @@ async function sendMessage(chatId, text)
     );
 }
 
-/*
- * Telegram webhook handler
- */
-app.post('/webhook', async (req, res) =>
-{
-    const message =
-        req.body.message;
-
-    if (!message)
-    {
-        return res.sendStatus(200);
-    }
-
-    const chatId =
-        message.chat.id;
-
-    const text =
-        message.text || '';
-
-    console.log('[MESSAGE]', text);
-
-    if (text === '/start')
-    {
-        await sendMessage(chatId, 'Welcome 🚀 Render Bot is live!');
-    }
-    else if (text === '/help')
-    {
-        await sendMessage(chatId, '/start\n/help\n/ping');
-    }
-    else if (text === '/ping')
-    {
-        await sendMessage(chatId, 'Pong ✅');
-    }
-    else
-    {
-        await sendMessage(chatId, `Echo: ${text}`);
-    }
-
-    res.sendStatus(200);
-});
-
-/*
- * Health check route (Render needs this sometimes)
- */
 app.get('/', (req, res) =>
 {
-    res.send('Bot is running');
+    res.send('Telegram Bot Running');
 });
 
-/*
- * Start server
- */
-app.listen(PORT, async () =>
+app.post('/webhook', async (req, res) =>
 {
-    console.log('Bot server running on port', PORT);
-
-    /*
-     * Set webhook automatically after deploy
-     */
-    const RENDER_URL =
-        process.env.RENDER_EXTERNAL_URL;
-
-    if (RENDER_URL)
+    try
     {
-        const webhookURL =
-            `${RENDER_URL}/webhook`;
+        const message =
+            req.body.message;
 
-        await fetch(
-            `${API}/setWebhook?url=${webhookURL}`
-        );
+        if (!message)
+        {
+            return res.sendStatus(200);
+        }
 
-        console.log('Webhook set to:', webhookURL);
+        const chatId =
+            message.chat.id;
+
+        const text =
+            message.text || '';
+
+        console.log(text);
+
+        if (text === '/start')
+        {
+            await sendMessage(
+                chatId,
+                'Welcome to Science Tutor Bot 🚀'
+            );
+        }
+        else if (text === '/ping')
+        {
+            await sendMessage(
+                chatId,
+                'Pong!'
+            );
+        }
+        else
+        {
+            await sendMessage(
+                chatId,
+                `Echo: ${text}`
+            );
+        }
+
+        res.sendStatus(200);
     }
+    catch (error)
+    {
+        console.error(error);
+        res.sendStatus(500);
+    }
+});
+
+app.listen(PORT, () =>
+{
+    console.log(
+        `Server running on port ${PORT}`
+    );
 });
