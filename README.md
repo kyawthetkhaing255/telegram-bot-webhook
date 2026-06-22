@@ -114,6 +114,9 @@ Add screenshots here:
 docs/images/bot.png
 ```
 
+<p align="center">
+  <img src="docs/images/bot.png" alt="Bot Screenshot" width="400"/>
+</p>
 ---
 
 ## 🤝 Contributing
