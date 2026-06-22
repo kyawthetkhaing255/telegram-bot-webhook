@@ -2,6 +2,11 @@
 
 node_modules/
 
+
+#bash scripts
+git_push.sh
+
+
 # Environment variables
 
 .env
