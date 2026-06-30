@@ -169,15 +169,15 @@ app.post('/webhook', async (req, res) =>
         switch (text)
         {
             case '/start':
-                await sendMessage(chatId, '🚀 Welcome to the Science Bot!');
+                await sendMessage(chatId, 'Thank you for contacting us, we will get back to you shortly.');
                 break;
 
             case '/help':
-                await sendMessage(chatId, '/start\n/help\n/ping\n/webapp');
+                await sendMessage(chatId, '/start\n/help\n/shop\n/webapp');
                 break;
 
-            case '/ping':
-                await sendMessage(chatId, 'Pong ✅');
+            case '/shop':
+                await sendMessage(chatId, 'What would you like to buy?',);
                 break;
 
             case '/webapp':
@@ -211,7 +211,7 @@ app.post('/webhook', async (req, res) =>
                 break;
 
             default:
-                await sendMessage(chatId, `Echo: ${text}`);
+                await sendMessage(chatId, `You said: ${text}`);
         }
 
         res.sendStatus(200);
